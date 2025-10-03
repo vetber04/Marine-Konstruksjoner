@@ -25,11 +25,20 @@ Systemfrihetsgrad for lokal frihetsgrad 1, Systemfrihetsgrad for lokal ende 2, E
 7 9 210 1
 1 6 210 2
 2 5 210 2
+Antall laster
+8
+laster 
+0
+0
+0
+0
+0
+0
+0
+0
 Antall tverrsnittsgeometrier
 2
 geometri tversnitt rør, I profil
 50 5 0 0
 220 110 9.2 5.9
-Antall laster
-8
 
