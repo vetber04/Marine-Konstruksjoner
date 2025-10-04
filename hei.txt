@@ -1,0 +1,18 @@
+p1 = 110
+g1 = 9
+alfa_1 = 0.4
+q5 = 15
+M_1 = 320
+P_2 = 55
+
+q2 = 9
+q3 = 5
+q4 = 8
+
+L1 = 18
+L2 = 20
+H = 12
+
+E_modul = 210 GPa
+
+Flytespenning = 355 MPa

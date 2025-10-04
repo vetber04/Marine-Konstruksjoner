@@ -48,12 +48,9 @@ def lesinput():
     comlin = fid.readline()
     geom = np.loadtxt(fid, dtype = float, max_rows = ngeom)
 
-    print(lastdata)
+    
    
     # Lukker input-filen
     fid.close()
 
     return npunkt, punkt, nelem, MNPC, tvsnitt, geom, lastdata
-
-
-
