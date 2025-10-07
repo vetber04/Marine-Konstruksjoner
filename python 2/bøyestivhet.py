@@ -25,12 +25,12 @@ def boyestivhet(tvsnitt, geom):
     EI = []
     for rad in tvsnitt:
         E = float(rad[0])
-        typekode = int(rad[1])
+        profiltype = int(rad[1])
 
-        if typekode == 1:
+        if profiltype == 1:
             I = I_ror_tynnvegget(R, t)
             EI.append(E * I)
-        elif typekode == 2:
+        elif profiltype == 2:
             I = I_Iprofil(h, b, tf, tw)
             EI.append(E* I)
             

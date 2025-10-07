@@ -20,13 +20,17 @@ def lesinput():
 
     #MNPC, E-modul, Profiltype
     comlin = fid.readline() 
-    elem = np.loadtxt(fid, dtype = int, max_rows = nelem)
+    elem = np.loadtxt(fid, dtype = float, max_rows = nelem)
 
     # Elementkonnektivitet (MNPC)
     # Kolonne 1: Systemfrihetsgrad for elementfrihetsgrad 1
     # Kolonne 2: Systemfrihetsgrad for elementfrihetsgrad 2
-    MNPC = elem[0:nelem,0:2]
-
+    MNPC = np.asarray(elem[:nelem, 0:2])           # tar kolonne 2 og 3 (slutten eksklusiv)
+    # hvis de er float, men egentlig heltall:
+    if np.allclose(MNPC, np.rint(MNPC)):
+        MNPC = np.rint(MNPC).astype(np.intp)       # trygg konvertering til int-indekser
+    else:
+        raise ValueError("Utsnittet inneholder ikke-heltallige verdier.")
     # Tverrsnittsdata
     # Kolonne 1: E-modul
     # Kolonne 2: Tverrsnittstype, I-profil=1 og rørprofil=2
@@ -38,7 +42,7 @@ def lesinput():
 
      #Leser lastdata
     comlin = fid.readline()
-    lastdata = np.loadtxt(fid, dtype = float, max_rows = nlast)     # <-- Forslag til innlesing av lastdata
+    lastdata = np.loadtxt(fid, dtype = float, max_rows = nlast)     
 
     #Antall tversnitttyper
     comlin = fid.readline()

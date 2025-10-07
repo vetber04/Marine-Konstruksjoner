@@ -1,5 +1,5 @@
 p1 = 110
-g1 = 9
+q1 = 9
 alfa_1 = 0.4
 q5 = 15
 M_1 = 320
@@ -13,6 +13,6 @@ L1 = 18
 L2 = 20
 H = 12
 
-E_modul = 210 GPa
+E_modul = 210 000 MPa
 
 Flytespenning = 355 MPa

@@ -5,39 +5,24 @@ import numpy as np
 from lesinput import lesinput
 from lengder import lengder
 from bøyestivhet import boyestivhet
-
-
+from fastinnspenning import fastinnspenning
+from Systemstivhetsmatrise import systemstivhetsmatrise
 def main():
 
     # -----Leser inputdata
     npunkt, punkt, nelem, MNPC, tvsnitt, geom, lastdata,  = lesinput()
+    #print(lastdata)
 
     # -----Beregner elementlengder
     elemlen = lengder(punkt, MNPC)
-    print(elemlen)
+
     # -----Beregner bøyestivhet for alle elementer
-    EI = boyestivhet(tvsnitt, geom)
-    print(EI)
+    #EI = boyestivhet(tvsnitt, geom)
     
-    # ------Bygger systemlastvektor
-    R = np.zeros(npunkt)
+    R = fastinnspenning(npunkt, lastdata, MNPC, elemlen)
 
-    #for ilast in lastdata:
-        # -----Beregner elementlastvektor S_fim m/fastinnspenningsmomenter for elementer med ytre last
-        # Lag funksjonen selv
-        # S_fim = elemlast(elemlen, ...
-
-        # -----Adderer elementlastvektor S_fim inn i systemlastvektor R vha. elementkonnektivitet
-        # Lag funksjonen selv
-        # R = elemlast_til_syslast(R, S_fim, MNPC )
-
-        # -----Adderer knutepunktsmoment inn i systemlastvektor R
-        # Lag funksjonen selv
-        # R = knutmom(R, ...
-
-    # ------Bygger systemstivhetsmatrisen ved å innaddere elementstivhetsmatriser vha. elementkonnektivitet
-    # Lag funksjonen selv
-    # K = stivmat(nelem, npunkt, tvsnitt, MNPC, elemlen, EI, ...
+    K = systemstivhetsmatrise(MNPC, npunkt, tvsnitt, nelem, punkt)
+    print(K)
 
     # ------Innfører grensebetingelser
     # Lag funksjonen selv basert på valgt metode for innføring av grensebetingelser
