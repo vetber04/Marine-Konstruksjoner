@@ -7,16 +7,16 @@ def rotasjonsfjær(K, r_fixed, k_fjær):
 
 
 
-def systemstivhetsmatrise(MNPC, npunkt, tvsnitt, nelem, punkt, lengder, bøyestivheter):
+def systemstivhetsmatrise8(MNPC, npunkt, tvsnitt, punkt):
     K = np.zeros((npunkt, npunkt), dtype=float)
     #Lager stivhetsmatrisen k_i
-    def K_i(L, EI,):
+    def K_i(EIL):
 
-        return (EI/L) * np.array([[4.0, 2.0],[2.0, 4.0]])
+        return (EIL) * np.array([[4.0, 2.0],[2.0, 4.0]])
         #return np.array([[4.0, 2.0],[2.0, 4.0]]) #for å teste bare k verdier
     #legger den inn systemstivhetsmatrise
-    for e in range(nelem):
-        ke = K_i(lengder[e], bøyestivheter[e]) 
+    for e in range(len(tvsnitt)):
+        ke = K_i(tvsnitt[e, 0]) 
         i, j = MNPC[e, 0], MNPC[e, 1]
         idx = [i, j]
         K[np.ix_(idx, idx)] += ke 

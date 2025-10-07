@@ -4,7 +4,7 @@ import numpy as np
 def lesinput():
 
     # Åpner inputfilen
-    fid = open("python 2/input.txt", "r")
+    fid = open("python 2/oving8input.txt", "r")
 
     #Antall knutepunkt
     fid.readline() 

@@ -23,9 +23,9 @@ def boyestivhet(tvsnitt, geom):
 
 
     EI = []
-    for rad in tvsnitt:
-        E = float(rad[0])
-        profiltype = int(rad[1])
+    for e in tvsnitt:
+        E = float(e[0])
+        profiltype = int(e[1])
 
         if profiltype == 1:
             I = I_ror_tynnvegget(R, t)
