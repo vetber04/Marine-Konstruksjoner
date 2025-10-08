@@ -15,12 +15,14 @@ def fastinnspenning(npunkt,lastedata, MNPC, lengder):
         L = lengder[elemnr]
         if tl == 1:
             P = q2P
-            a = q1a
-            b = 1-a
+            a = q1a*L
+            b = (1-a)*L
             
+            M1 = -(P*a*(b**2))/(L**2)
+            M2 = (P*a*(b**2))/(L**2)
 
-            R[MNPC[elemnr, 0]] += -(P*a*(b**2))/(L**2)
-            R[MNPC[elemnr, 1]] += -(P*a*(b**2))/(L**2)
+            R[MNPC[elemnr, 0]] += M1
+            R[MNPC[elemnr, 1]] += M2
         elif tl == 2:
             
             #Lineært fordelt last med endeverdier q1 og q2

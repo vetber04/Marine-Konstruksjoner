@@ -58,3 +58,5 @@ def lesinput():
     fid.close()
 
     return npunkt, punkt, nelem, MNPC, tvsnitt, geom, lastdata
+
+print(lesinput()[1])

@@ -24,7 +24,7 @@ def main():
     R = fastinnspenning(npunkt, lastdata, MNPC, elemlen)
     #print(EI)
     #print(elemlen)
-    #print(R)
+    print(R)
 
 
     K = systemstivhetsmatrise8(MNPC, npunkt, tvsnitt, punkt)
@@ -41,8 +41,8 @@ def main():
     print(rot)
 
     #------Beregner momentverdier for alle element ved endene, 
-    #em = endemoment(MNPC, rot, tvsnitt, lengder, nelem)
-    #print(em*1e4)
+    em = endemoment(MNPC, rot, tvsnitt, elemlen, nelem, R, lastdata)
+    print(em*1e4)
     
     #------og ved midtpunkt for fordelt last og under punktlaster
     #------vha. superposisjonsprinsippet
