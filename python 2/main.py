@@ -6,16 +6,17 @@ from lesinput import lesinput
 from lengder import lengder
 from bøyestivhet import boyestivhet
 from fastinnspenning import fastinnspenning
+from endemoment import endemoment
 #from Systemstivhetsmatrise import systemstivhetsmatrise
 from Systemstivhetsmatriseøving8 import systemstivhetsmatrise8
 def main():
 
     # -----Leser inputdata
     npunkt, punkt, nelem, MNPC, tvsnitt, geom, lastdata,  = lesinput()
-    #print(lastdata)
+    print(lastdata)
 
     # -----Beregner elementlengder
-    elemlen =  lengder(punkt, MNPC) # mm slik at det går opp med EI N/mm^2 MPa
+    elemlen =  lengder(punkt, MNPC) # ? mm slik at det går opp med EI N/mm^2 MPa
 
     # -----Beregner bøyestivhet for alle elementer
     #EI = boyestivhet(tvsnitt, geom)
@@ -23,7 +24,7 @@ def main():
     R = fastinnspenning(npunkt, lastdata, MNPC, elemlen)
     #print(EI)
     #print(elemlen)
-    print(R)
+    #print(R)
 
 
     K = systemstivhetsmatrise8(MNPC, npunkt, tvsnitt, punkt)
@@ -33,11 +34,16 @@ def main():
     fmt = lambda x: "0" if np.isclose(x, 0.0, atol=1e-12) else f"{x:.2f}"
     print(df.to_string(formatters={c: fmt for c in df.columns}))
 
+
  
     # -----Løser ligningssystemet------
     rot = np.linalg.solve(K, R)
     print(rot)
+
     #------Beregner momentverdier for alle element ved endene, 
+    #em = endemoment(MNPC, rot, tvsnitt, lengder, nelem)
+    #print(em*1e4)
+    
     #------og ved midtpunkt for fordelt last og under punktlaster
     #------vha. superposisjonsprinsippet
     # Lag funksjonen selv
