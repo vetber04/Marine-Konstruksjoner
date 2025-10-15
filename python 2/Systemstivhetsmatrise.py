@@ -1,17 +1,20 @@
 import numpy as np
-k_fjær = 1e6
+k_diagonal = 1e6  #bør være lik størrelseorden som andre diagnoalelementer i K
 
-def rotasjonsfjær(K, r_fixed, k_fjær):
+def fjern_rad_kolloner(K, r_fixed, R):
     for r in r_fixed:
-        K[int(r), int(r)] += float(k_fjær)
+        K[int(r), :] = 0
+        K[:, int(r)] = 0
+        K[int(r), int(r)] = k_diagonal
+        R[int(r)] = 0
+    return K, R
 
 
 
-def systemstivhetsmatrise(MNPC, npunkt, tvsnitt, nelem, punkt, lengder, bøyestivheter):
+def systemstivhetsmatrise(MNPC, npunkt, tvsnitt, nelem, punkt, lengder, bøyestivheter, R):
     K = np.zeros((npunkt, npunkt), dtype=float)
     #Lager stivhetsmatrisen k_i
     def K_i(L, EI,):
-
         return (EI/L) * np.array([[4.0, 2.0],[2.0, 4.0]])
         #return np.array([[4.0, 2.0],[2.0, 4.0]]) #for å teste bare k verdier
     #legger den inn systemstivhetsmatrise
@@ -22,9 +25,9 @@ def systemstivhetsmatrise(MNPC, npunkt, tvsnitt, nelem, punkt, lengder, bøyesti
         K[np.ix_(idx, idx)] += ke 
     
     fixed_r = [int(n) for n in range(punkt.shape[0]) if punkt[n, 2] == 1]
-    rotasjonsfjær(K, fixed_r, k_fjær)
+    fjern_rad_kolloner(K, fixed_r, R)
            
-    return K
+    return K, R
 
 
 

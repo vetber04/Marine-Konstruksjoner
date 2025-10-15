@@ -4,7 +4,7 @@ import numpy as np
 def lesinput():
 
     # Åpner inputfilen
-    fid = open("python 2/oving8input.txt", "r")
+    fid = open("python 2/inputfiler/input.txt", "r") #Husk å endre bøyestivhet funk ved endring av inputfil
 
     #Antall knutepunkt
     fid.readline() 
@@ -25,7 +25,10 @@ def lesinput():
     # Elementkonnektivitet (MNPC)
     # Kolonne 1: Systemfrihetsgrad for elementfrihetsgrad 1
     # Kolonne 2: Systemfrihetsgrad for elementfrihetsgrad 2
-    MNPC = np.asarray(elem[:nelem, 0:2])           # tar kolonne 2 og 3 (slutten eksklusiv)
+    if nelem == 1:
+        MNPC = np.array([[int(elem[0]), int(elem[1])]])
+    else:
+        MNPC = np.asarray(elem[:nelem, 0:2])           # tar kolonne 2 og 3 (slutten eksklusiv)
     # hvis de er float, men egentlig heltall:
     if np.allclose(MNPC, np.rint(MNPC)):
         MNPC = np.rint(MNPC).astype(np.intp)       # trygg konvertering til int-indekser
@@ -34,7 +37,10 @@ def lesinput():
     # Tverrsnittsdata
     # Kolonne 1: E-modul
     # Kolonne 2: Tverrsnittstype, I-profil=1 og rørprofil=2
-    tvsnitt = elem[0:nelem,2:4]
+    if nelem == 1:
+        tvsnitt = np.array([[elem[2], elem[3]]])
+    else:
+        tvsnitt = elem[0:nelem,2:4]
 
     #Antall laster 
     comlin = fid.readline()
@@ -58,5 +64,3 @@ def lesinput():
     fid.close()
 
     return npunkt, punkt, nelem, MNPC, tvsnitt, geom, lastdata
-
-print(lesinput()[1])

@@ -1,51 +1,56 @@
 import numpy as np
-from lesinput import lesinput
 from lengder import lengder
-# tl: type last: punkt = 1 gjevnt fordelt = 2 moment = 3
-# elemnr: elementnr (må hente hvilke rotasjoner fra MNPC)
-# q1a: 1: q ved knutepunkt A MNPC[0], 2: alfa (punktlast avstand fra ventre ende), 3: Moment [kN/m]
-# q2P: 1: q ved knutepunkt B MNPC [1], 2: punktlast P kN
-def fastinnspenning(npunkt,lastedata, MNPC, lengder): 
-    R = np.zeros(npunkt)
+
+
+def fastinnspenning(npunkt, lastedata, MNPC, lengder):
+    
+    R = np.zeros(int(npunkt))
+
     for last in lastedata:
-        tl = last[0] 
-        elemnr = int(last[1])
-        q1a = last[2]
-        q2P = last[3]
-        L = lengder[elemnr]
+        tl     = int(last[0]) # lastetype
+        elemnr = int(last[1])      
+        q1a    = float(last[2])
+        q2P    = float(last[3])
+
         if tl == 1:
-            P = q2P
-            a = q1a*L
-            b = (1-a)*L
-            
-            M1 = -(P*a*(b**2))/(L**2)
-            M2 = (P*a*(b**2))/(L**2)
+            # Punktlast P [N] på elemnr, ved a = alpha*L fra venstre ende.
+            L  = float(lengder[elemnr])
+            A, B = int(MNPC[elemnr, 0]), int(MNPC[elemnr, 1])
+            alpha = q1a
+            P     = q2P
 
-            R[MNPC[elemnr, 0]] += M1
-            R[MNPC[elemnr, 1]] += M2
+            a = alpha * L
+            b = L - a
+
+            # Faste endemomenter med klokka positiv:
+            M1 = -( P * a * b**2 / L**2 )   # ved kp A
+            M2 = +( P * a**2 * b / L**2 )   # ved kp B
+
+            R[A] += M1
+            R[B] += M2
+
         elif tl == 2:
-            
-            #Lineært fordelt last med endeverdier q1 og q2
-            q1 = q1a  # ved ende 1 (nedover > 0)
-            q2 = q2P  # ved ende 2 (nedover > 0)
+            # Lineært fordelt last på element elemnr: q1a (ved A), q2P (ved B), i N/m
+            L  = float(lengder[elemnr])
+            A, B = int(MNPC[elemnr, 0]), int(MNPC[elemnr, 1])
+            q1, q2 = q1a, q2P
 
-            M1 =  L**2 * (q1/20.0 + q2/30.0)
-            M2 =  -L**2 * (q1/30.0 + q2/20.0)
-            R[MNPC[elemnr, 0]] += M1
-            R[MNPC[elemnr, 1]] += M2
-            
+            # Trapeslast, med klokka positiv M:
+            M1 =  L**2 * (q1/20.0 + q2/30.0)   # ved node A
+            M2 = -L**2 * (q1/30.0 + q2/20.0)   # ved node B
+
+            R[A] += M1
+            R[B] += M2
+
         elif tl == 3:
-            M1 = q1a
-            # Kun rotasjonspunkt
-            R[MNPC[elemnr, 0]] += M1
-        
+            # Påført endemoment ved KNUTEPUNKT elemnr (ikke elementnr)
+            kp = elemnr
+            M = q1a  # N·m, CW positiv
+            R[kp] += M
+
+        else:
+            raise ValueError("Ukjent lastetype")
     return R
-
-
-
-
-
-
 
 
 

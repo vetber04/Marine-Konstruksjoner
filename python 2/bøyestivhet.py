@@ -13,8 +13,10 @@ def I_Iprofil(h_total, b_flens, flens_tykkelse, tykkelse_steg):
     I_steg = (tykkelse_steg * h_steg**3) / 12
     return I_flens + I_steg
 
-def boyestivhet(tvsnitt, geom):
-
+def boyestivhet(tvsnitt, geom, oving8=False):
+    if oving8:
+        return tvsnitt[:, 0]  # EI er oppgitt direkte i inputfil
+    # Ellers regner vi ut I for de ulike profilene
     geom = np.array(geom)
 
     
