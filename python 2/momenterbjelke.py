@@ -27,8 +27,9 @@ def M_midt_endemoment(M_ende, nelem, lastdata):
 
 
 #Antar kunn en punktlast per element
-def M_under_punktlast(lastedata, nelem, M_ende):
+def M_under_punktlast(lastedata, nelem, M_ende, lengder):
     # M_ende er totale endemomenter (kθ − r_e)
+    
     M_under = np.zeros(nelem)
     for last in lastedata:
         tl, e, alpha, P = last
@@ -36,11 +37,13 @@ def M_under_punktlast(lastedata, nelem, M_ende):
             continue
         e  = int(e) # posisjon punktlast i forhold til elementlengde (0-1)
         M1, M2 = M_ende[e,0], M_ende[e,1]
-        M_under[e] = (1.0 - alpha)*M1 + alpha*M2   # kontinuerlig M, knekk i helning
+        M_under[e]  = (1.0 - alpha) * M1 + alpha * M2
+        M_under[e] += - P * alpha * (1.0 - alpha) * lengder[e]
+
     return M_under
 
 def momenterbjelke(lastedata, nelem, lengder, M_ende):  
     M_mid_ende = M_midt_endemoment(M_ende, nelem, lastedata)
     M_mid_last_fordelt = M_midt_fordeltlast(lastedata, nelem, lengder) + M_mid_ende
-    M_under_punkt = M_under_punktlast(lastedata, nelem, M_ende)
+    M_under_punkt = M_under_punktlast(lastedata, nelem, M_ende, lengder)
     return M_mid_last_fordelt, M_under_punkt

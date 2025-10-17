@@ -4,7 +4,7 @@ import numpy as np
 def lesinput():
 
     # Åpner inputfilen
-    fid = open("python 2/inputfiler/input.txt", "r") #Husk å endre bøyestivhet funk ved endring av inputfil
+    fid = open("python 2/inputfiler/eksibokinput.txt", "r") #Husk å endre bøyestivhet funk ved endring av inputfil
 
     #Antall knutepunkt
     fid.readline() 

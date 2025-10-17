@@ -9,6 +9,7 @@ from fastinnspenning import fastinnspenning
 from endemoment import endemoment
 from momenterbjelke import momenterbjelke
 from Systemstivhetsmatrise import systemstivhetsmatrise
+from shear import Q_superpos
 #from Systemstivhetsmatriseøving8 import systemstivhetsmatrise8
 def main():
     # ---printefunksjon ---
@@ -46,18 +47,17 @@ def main():
 
     # -----Løser ligningssystemet------
     rot = np.linalg.solve(K, R)
-    print("rotasjon * 1e-3 \n", fmt_arr((rot*1e3), fmt="{:.2f}")) #rot i mrad
+    print("rotasjon * 1e-3 \n", fmt_arr((rot*112), fmt="{:.4f}")) #rot i mrad
 
     #------Beregner momentverdier for alle element ved endene, 
     em = endemoment(MNPC, rot, EI, elemlen, nelem, R, lastdata)
-    print("Endemoment kNm:\n", fmt_arr(em, fmt="{:.4f}")) #em i kNm
+    print("Endemoment Nmm:\n", fmt_arr(em*56, fmt="{:.4f}")) #em i kNm
     
     #------Beregner momentverdier for alle element ved midtpunkt for fordelt last,
     #------og under punktlast, vha. superposisjonsprinsippet
     mb = momenterbjelke(lastdata, nelem, elemlen, em)
-    print("Moment midt på bjelke pga av fordelt last kN/m \n", fmt_arr(np.array(mb[0]*1e-3), fmt="{:.2f}"))
-    print("Moment under punktlast kN/m\n", fmt_arr(np.array(mb[1]*1e-3), fmt="{:.2f}"))
-   
+    print("Moment midt på bjelke pga av fordelt last kN/m \n", fmt_arr(np.array(mb[0]), fmt="{:.4f}"))
+    print("Moment under punktlast kN/m\n", fmt_arr(np.array(mb[1]*56), fmt="{:.4f}"))
 
     #------Beregner skjærkraftverdier for alle element ved endene
 
@@ -66,7 +66,8 @@ def main():
     #------for å addere til Q-bidrag fra ytre last
     # Lag funksjonen selv
     # Qval = shear(nlast, last, MNPC, elemlen, rot, tvsnitt, ...
-
+    skjearkraft = Q_superpos(lastdata, em, elemlen, mb[1])
+    print(skjearkraft*56)
     #------Beregner bøyespenning for alle element ved endene, 
     #------og ved midtpunkt for fordelt last og under punktlaster
     # Lag funksjonen selv

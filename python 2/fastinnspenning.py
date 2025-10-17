@@ -24,10 +24,10 @@ def fastinnspenning(npunkt, lastedata, MNPC, lengder):
 
             # Faste endemomenter med klokka positiv:
             M1 = -( P * a * b**2 / L**2 )   # ved kp A
-            M2 = +( P * a**2 * b / L**2 )   # ved kp B
+            M2 = ( P * a**2 * b / L**2 )   # ved kp B
 
-            R[A] += M1
-            R[B] += M2
+            R[A] += -M1
+            R[B] += -M2
 
         elif tl == 2:
             # Lineært fordelt last på element elemnr: q1a (ved A), q2P (ved B), i N/m
