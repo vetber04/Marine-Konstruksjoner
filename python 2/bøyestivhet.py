@@ -13,10 +13,25 @@ def I_Iprofil(h_total, b_flens, flens_tykkelse, tykkelse_steg):
     I_steg = (tykkelse_steg * h_steg**3) / 12
     return I_flens + I_steg
 
-def boyestivhet(tvsnitt, geom, oving8=True):
+def boyestivhet(tvsnitt, geom, oving8=False, test=False, dbeam=True):
     if oving8:
-        return tvsnitt[:, 0]  # EI er oppgitt direkte i inputfil
+        EI = tvsnitt[:, 0]
+        print("Bøyestivheter EI fra inputfil (kN·m²):", EI)
+        return EI # EI er oppgitt direkte i inputfil
     # Ellers regner vi ut I for de ulike profilene
+    if dbeam:
+        ipe = 7.9449e7
+        ror = 9.5889e7
+        I = [ror, ror, ror, ipe, ror, ror, ipe, ror, ror, ipe, ipe]
+        E = 210e3  # N/mm^2 (= MPa)
+        return np.array(E * np.array(I) * 1e-6)  # -> N·m^2
+    if test:
+        I = 2.8981e6   # mm^4
+        E = 210e3      # N/mm^2 (= MPa)
+        EI = E * I * 1e-6   # -> N·m^2
+        return np.array([[EI], [EI]])  
+
+    
     geom = np.array(geom)
 
     

@@ -2,18 +2,16 @@ import numpy as np
 from fastinnspenning import fastinnspenning
 
 def M_ytrelast(e, lastdata, lengder,MNPC):
-    if e not in lastdata[:, 1]:
-        return np.array([0.0, 0.0])
-    
     S_i_fast = np.array([0.0, 0.0])
-    lastdata_e = lastdata[lastdata[:, 1] == e]
-    for last in lastdata_e:
+ 
+    for last in lastdata:
         tl = last[0] 
-        elemnr_ml = int(last[1])
+        elemnr = int(last[1])
         q1a = last[2]
         q2P = last[3]
-        L = lengder[elemnr_ml]
-        if tl == 1:
+        L = lengder[elemnr]
+        M_kp = int(last[4])
+        if tl == 1 and e == elemnr:
             P = q2P
             a = q1a*L
             b = L - a
@@ -23,7 +21,7 @@ def M_ytrelast(e, lastdata, lengder,MNPC):
 
             S_i_fast[0] += M1
             S_i_fast[1] += M2
-        elif tl == 2:
+        elif tl == 2 and e == elemnr:
             
             #Lineært fordelt last med endeverdier q1 og q2
             q1 = q1a  # ved ende 1 (nedover > 0)
@@ -33,16 +31,6 @@ def M_ytrelast(e, lastdata, lengder,MNPC):
             M2 =  -L**2 * (q1/30.0 + q2/20.0)
             S_i_fast[0] += M1
             S_i_fast[1] += M2
-        elif tl == 3:
-            M = q1a  # N·m, CW positiv
-            kp_M = elemnr_ml 
-            for e in MNPC:
-                if e[0] == kp_M:
-                    S_i_fast[0] += M
-                if e[1] == kp_M:
-                    S_i_fast[1] += M
-        else:
-            raise ValueError("Ukjent lastetype")
     return S_i_fast
    
     
@@ -56,7 +44,8 @@ def endemoment(MNPC, rot, bøyestivhet, lengder, nelem, R, lastdata):
         r = np.array([rot[kp_1], rot[kp_2]]) #rotasjon for element e
         k_i = bøyestivhet[e]/lengder[e] * np.array([[4.0, 2.0],[2.0, 4.0]])
         S_i_fast = M_ytrelast(e,lastdata, lengder,MNPC)
-        M_ende[e, :] = k_i @ r - S_i_fast
+        print(S_i_fast)
+        M_ende[e, :] = k_i @ r + S_i_fast
     return M_ende
 
 
