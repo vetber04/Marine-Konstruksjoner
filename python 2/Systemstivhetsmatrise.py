@@ -11,7 +11,7 @@ def fjern_rad_kolloner(K, r_fixed, R, k_diagonal):
 
 
 
-def systemstivhetsmatrise(MNPC, npunkt, tvsnitt, nelem, punkt, lengder, bøyestivheter, R, k_diagonal):
+def systemstivhetsmatrise(MNPC, npunkt, tvsnitt, nelem, punkt, lengder, EI, R, k_diagonal):
     K = np.zeros((npunkt, npunkt), dtype=float)
     #Lager stivhetsmatrisen k_i
     def K_i(L, EI,):
@@ -19,7 +19,7 @@ def systemstivhetsmatrise(MNPC, npunkt, tvsnitt, nelem, punkt, lengder, bøyesti
         #return np.array([[4.0, 2.0],[2.0, 4.0]]) #for å teste bare k verdier
     #legger den inn systemstivhetsmatrise
     for e in range(nelem):
-        ke = K_i(lengder[e], bøyestivheter[e]) 
+        ke = K_i(lengder[e], EI[e]) 
         i, j = MNPC[e, 0], MNPC[e, 1]
         idx = [i, j]
         K[np.ix_(idx, idx)] += ke 

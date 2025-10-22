@@ -14,5 +14,3 @@ def lengder(punkt, MNPC):
         elemlen = np.append(elemlen, np.sqrt(dx*dx + dy*dy))
 
     return elemlen
-
-print(lengder(input[1], input[3]))

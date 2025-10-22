@@ -1,6 +1,6 @@
 Antall knutepunkt 
 10
-# x, y, fastholdt/fri rotasjon, 
+# x, y, fastholdt=1/fri rotasjon=0, 
 0 0 1			
 0 12 0
 0 24 0
@@ -20,17 +20,17 @@ Systemfrihetsgrad for lokal frihetsgrad 1, Systemfrihetsgrad for lokal ende 2, E
 3 4 210e9 2
 4 5 210e9 1
 5 6 210e9 1
-6 7 210e9 1
-6 8 210e9 2
+6 7 210e9 2
+6 8 210e9 1
 7 9 210e9 1
 1 6 210e9 2
 2 5 210e9 2
 Antall laster
 9
 typelast punkt=1 fordelt=2 moment = 3, elementnr for last (ikke moment), q [N/m] ved knutepunkt A (alfa), q ved knutepunkt B (P [N]), Knutepunkt til moment
-2 0 8000 10000.33328 0
-2 1 10000.33328 12000.66656 0
-2 2 12000.66656 15000 0
+2 0 8000 10333.332 0
+2 1 10333.332 12666.667 0
+2 2 12666.667 15000 0
 2 3 9000 9000 0
 3 0 -320000 0 3
 2 6 5000 5000 0
@@ -40,5 +40,5 @@ typelast punkt=1 fordelt=2 moment = 3, elementnr for last (ikke moment), q [N/m]
 Antall tverrsnittsgeometrier
 2
 geometri tversnitt rør, I profil [m], IPE profil
-0.280 0.01 0 0
-0.3 0.150 0.0107 0.0068
+0.012 0.136504 0 0
+0.300 0.150 0.0107 0.0068

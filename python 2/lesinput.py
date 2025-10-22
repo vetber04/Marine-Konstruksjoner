@@ -2,7 +2,6 @@ import numpy as np
 
 
 def lesinput():
-    print("hei")
     # Åpner inputfilen
     fid = open("python 2/inputfiler/input.txt", "r") #Husk å endre bøyestivhet funk ved endring av inputfil
     #Antall knutepunkt

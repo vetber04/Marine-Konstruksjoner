@@ -10,80 +10,81 @@ from endemoment import endemoment
 from momenterbjelke import momenterbjelke
 from Systemstivhetsmatrise import systemstivhetsmatrise
 from shear import Q_superpos
-
-
-#from Systemstivhetsmatriseøving8 import systemstivhetsmatrise8
-def main():
+from bøyespenning import M_spenning
+from printefunk import fmt_arr
+lesinput = lesinput()
+def main(lesinput, geom_override=None, Printe=False):
     # ---printefunksjon ---
-    def fmt_arr(a, fmt="{:.2e}"):
-        a = np.asarray(a, dtype=float)
-        if a.ndim == 1:
-            return "[" + ", ".join(fmt.format(x) for x in a) + "]"
-        elif a.ndim == 2:
-            rows = ["[" + ", ".join(fmt.format(x) for x in row) + "]" for row in a]
-            return "[\n  " + ",\n  ".join(rows) + "\n]"
-        else:
-            return np.array2string(a)
-
-    k_diagonal = 1
-    # -----Leser inputdata
-    npunkt, punkt, nelem, MNPC, tvsnitt, geom, lastdata,  = lesinput()
-    # ------Beregner elementlengder----
+    
+    #---- faktorer for skalering -------------
+    k_diagonal = 1e6
+    s = 1
+    f = 1e-6 #faktor til systemstivhetsmatrise
+    bs = 1e-6
+    # ----- Leser inputdata -------
+    npunkt, punkt, nelem, MNPC, tvsnitt, geom, lastdata,  = lesinput
+    if geom_override is not None:
+        geom = np.array(geom_override, dtype=float)   #endrer viss i løkke
     elemlen =  lengder(punkt, MNPC) #[m]
     # Beregner bøyestivhet for alle elementer
-    EI = boyestivhet(tvsnitt, geom)
+    EI = boyestivhet(tvsnitt, geom)[0]
+    I_zmax = boyestivhet(tvsnitt, geom)[1]
     # -----Setter opp R vektor------------------------
     R = fastinnspenning(npunkt, lastdata, MNPC, elemlen)
-    
     # -----Setter opp systemstivhetsmatrise K og modifiserer R for faste knutepunkter
     K, R = systemstivhetsmatrise(MNPC, npunkt, tvsnitt, nelem, punkt, elemlen, EI, R, k_diagonal)
-    print("R: Nm", fmt_arr(R, fmt="{:.2f}")) #R i kN
-    
-    #-----printer K matrise i pandas, lettere å lese-----------------------
-    print("Systemstivhetsmatrise K (i MN/m):")
-    df = pd.DataFrame(K)  # Skalerer for bedre lesbarhet
-    fmt = lambda x: "0" if np.isclose(x, 0.0, atol=1e-12) else f"{x:.2f}"
-    print(df.to_string(formatters={c: fmt for c in df.columns}))
-
     # -----Løser ligningssystemet------
-    s = 1
-    
     rot = np.linalg.solve(K, R)
-    print("rotasjon rad", fmt_arr((rot), fmt="{:.7f}")) #rot i mrad
-
     #------Beregner momentverdier for alle element ved endene, 
     em =endemoment(MNPC, rot, EI, elemlen, nelem, R, lastdata)
-    print(f"Endemoment Nm: {s}\n", fmt_arr(em*s, fmt="{:.4f}")) #em i Nm
-    
     #------Beregner momentverdier for alle element ved midtpunkt for fordelt last,
     #------og under punktlast, vha. superposisjonsprinsippet
     mb =  momenterbjelke(lastdata, nelem, elemlen, em)
-    print("Moment midt på bjelke pga av fordelt last N/m \n", fmt_arr(np.array(mb[0]*s), fmt="{:.4f}"))
-    print(f"Moment under punktlast N/m {s}\n", fmt_arr(np.array(mb[1]*s), fmt="{:.4f}"))
-    #------Beregner skjærkraftverdier for alle element ved endene
+    #------Beregner skjærkraftverdier for alle element ved enden
+    Q = Q_superpos(lastdata, em, elemlen)
+    #----Bøyespenning-----
+    sigma_M =  M_spenning(em, mb[1], mb[0], I_zmax) 
+    sigma_ender = sigma_M[0]
+    sigma_punkt = sigma_M[1]
+    sigma_ford = sigma_M[2]
+    if Printe:
+        df = pd.DataFrame(K*f)  # Skalerer for bedre lesbarhet
+        fmt = lambda x: "0" if np.isclose(x, 0.0, atol=1e-12) else f"{x:.2f}"
+        print(EI)
+        print(df.to_string(formatters={c: fmt for c in df.columns}))
+        print("\nR: KNm", fmt_arr(R*s, fmt="{:.6f}")) #R i kN
+        print(f"\n Systemstivhetsmatrise K (*{f}:)")
+        print(f"\nRotasjon (grader){(180/np.pi)}", fmt_arr(((180/np.pi)*rot), fmt="{:.7f}")) #rot i mrad
+        print(f"\nEndemoment Nm: *{s}\n", fmt_arr(em*s, fmt="{:.5f}")) #em i Nm
+        print(f"Moment midt på bjelke pga av fordelt last Nmm (*{1000})\n", fmt_arr(np.array(mb[0]*1000), fmt="{:.2e}"))
+        print(f"Moment under punktlast N/m *{s}\n", fmt_arr(np.array(mb[1]*s), fmt="{:.4f}"))
+        print(f"Skjærkraft [KN] *{s}\n", fmt_arr(np.array(Q*s), fmt="{:.2f}"))
+        print(f"\nSigma ender [Mpa]  (*{bs})", fmt_arr(sigma_M[0]*bs, fmt="{:.3f}"))
+        print(f"\nSigma pkt [Mpa]  (*{bs})",fmt_arr(sigma_M[1]*bs, fmt="{:.3f}"))
+        print(f"\nSigma  fordelt-last [Mpa]  (*{bs})\n",fmt_arr(sigma_M[2]*bs, fmt="{:.3f}"))
+    # Finn "verste" (maks absolutt) spenning per element
+    worst = np.maximum.reduce([
+        np.abs(sigma_ender[:,0]),
+        np.abs(sigma_ender[:,1]),
+        np.abs(sigma_punkt),
+        np.abs(sigma_ford)
+    ])
 
-    #------vha. enkel derivasjon (Q=dM/ds) for Q-bidrag fra moment pga.
-    #------bjelkeenderotasjoner, og bruker superposisjonsprinsippet
-    #------for å addere til Q-bidrag fra ytre last
-    # Lag funksjonen selv
+    return {
+        "em": em,
+        "mb": mb,
+        "I_zmax": I_zmax,
+        "worst_sigma": worst,   # (nelem,)
+        "EI": EI,
+        "Q": Q,
+        "rot": rot,
+        "nelem": nelem,
+        "MNPC": MNPC,
+        "tvsnitt": tvsnitt,
+        "geom": geom,           # faktisk brukt geometri
+        "lastdata": lastdata,
+        "elemlen": elemlen,
 
-    skjearkraft = Q_superpos(lastdata, em, elemlen, mb[1])
-    print(skjearkraft*56)
-    #------Beregner bøyespenning for alle element ved endene, 
-    #------og ved midtpunkt for fordelt last og under punktlaster
-    # Lag funksjonen selv
-    # sigma_M = boyespenn(...
+    }
 
-    #-----Printer bøyespenninger for alle elementene
-    # print("Bøyespenninger:")
-    # print(sigma_M)
-
-    #-----Printer momentverdier for alle elementer
-    # print("Momentverdier for tegning av M-diagram (for hånd):")
-    # print(Mval)
-
-    #-----Printer skjærkraftverdier ved endene for alle elementer
-    # print("Skjærkraftverdier for tegning av Q-diagram (for hånd):")
-    # print(Qval)
-
-main()
+main(lesinput,Printe=True)
