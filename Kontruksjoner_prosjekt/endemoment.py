@@ -10,7 +10,7 @@ def M_ytrelast(e, lastdata, lengder, MNPC):
         q2P    = float(last[3])
         L      = float(lengder[elemnr])
 
-        if tl == 1 and e == elemnr:
+        if tl == 1:
             # Punktlast P ved a = alpha*L fra venstre ende
             P = q2P
             a = q1a * L
@@ -20,7 +20,7 @@ def M_ytrelast(e, lastdata, lengder, MNPC):
             S_i_fast[0] += M1
             S_i_fast[1] += M2
 
-        elif tl == 2 and e == elemnr:
+        elif tl == 2:
             # Lineært fordelt last q1 -> q2 (nedover > 0)
             q1 = q1a
             q2 = q2P

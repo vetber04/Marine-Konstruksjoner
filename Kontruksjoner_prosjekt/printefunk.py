@@ -1,5 +1,7 @@
 import numpy as np
 
+#Funksjon for å printe array med formatering for lesbarhet
+
 def fmt_arr(a, fmt="{:.2e}"):
         a = np.asarray(a, dtype=float)
         if a.ndim == 1:

@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+#CHAT GPT HAR LAGET DETTE SKAL IKKE BRUKES
+
+
 # ================== IMPORTS OG INN-LASINGER ==================
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,7 +12,7 @@ import pandas as pd
 from lesinput import lesinput
 from lengder import lengder
 from bøyestivhet import boyestivhet
-from fastinnspenning import fastinnspenning
+from lastvektor import lastvektor
 from endemoment import endemoment
 from momenterbjelke import momenterbjelke
 from Systemstivhetsmatrise import systemstivhetsmatrise
@@ -122,7 +125,7 @@ def plot_rammediagram_shear():
         MNPC     = np.asarray(res["MNPC"], int)
         nelem    = int(res["nelem"])
         # Punkt-koordinater (x,y) hentes trygt fra lesinput (der ligger noder)
-        npunkt, punkt, _, MNPC_in, _, _, lastdata = lesinput
+        npunkt, punkt, _, MNPC_in, _, _, lastdata, elemgruppe = lesinput
     except KeyError:
         # Fallback om noen nøkler ikke ligger i res
         npunkt, punkt, nelem, MNPC_in, tvsnitt, geom, lastdata = lesinput

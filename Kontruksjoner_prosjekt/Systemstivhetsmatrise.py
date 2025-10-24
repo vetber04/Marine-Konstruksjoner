@@ -1,5 +1,5 @@
 import numpy as np
- #bør være lik størrelseorden som andre diagnoalelementer i K
+
 
 def fjern_rad_kolloner(K, r_fixed, R, k_diagonal):
     for r in r_fixed:
@@ -11,13 +11,12 @@ def fjern_rad_kolloner(K, r_fixed, R, k_diagonal):
 
 
 
-def systemstivhetsmatrise(MNPC, npunkt, tvsnitt, nelem, punkt, lengder, EI, R, k_diagonal):
+def systemstivhetsmatrise(MNPC, npunkt, nelem, punkt, lengder, EI, R, k_diagonal):
     K = np.zeros((npunkt, npunkt), dtype=float)
     #Lager stivhetsmatrisen k_i
     def K_i(L, EI,):
         return (EI/L) * np.array([[4.0, 2.0],[2.0, 4.0]])
-        #return np.array([[4.0, 2.0],[2.0, 4.0]]) #for å teste bare k verdier
-    #legger den inn systemstivhetsmatrise
+     #legger den inn systemstivhetsmatrise
     for e in range(nelem):
         ke = K_i(lengder[e], EI[e]) 
         i, j = MNPC[e, 0], MNPC[e, 1]
